@@ -57,12 +57,18 @@
   $('#sendEmailForm').on('submit', function(event) {
 
     event.preventDefault();
-
     let button = $('#submitEmail');
-
     button.html('<span class="spinner-border" role="status" aria-hidden="true"></span>');
     button.attr('disabled', true);
 
+    const emailValue = $('#emailInput').val();
+    $.post( 'http://localhost:3000/email', { email: emailValue }, function(data, status) {
+      console.log('Here!!!!');
+      console.log(status);
+    });
+
   });
 
-  })(jQuery); // End of use strict
+
+
+})(jQuery); // End of use strict

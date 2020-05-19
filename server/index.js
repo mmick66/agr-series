@@ -1,14 +1,11 @@
 'use strict';
 
-
-const API_KEY = '05cb1a20f2b38d506e5c49ecd35f0990-us18';
 const API_URL = 'https://us18.api.mailchimp.com/3.0';
 const LIST_ID = 'dee953cf76';
 
 const Hapi = require('@hapi/hapi');
 const Wreck = require('@hapi/wreck');
 const Validator = require("email-validator");
-const Member = require('./member.class');
 
 const init = async () => {
 
@@ -22,7 +19,12 @@ const init = async () => {
         path: '/email',
         handler: async (request, h) => {
 
-            let email = request.payload;
+            let postData = request.payload;
+            if (!postData) {
+                return h.response('No data received in the body of this request').code(400);
+            }
+
+            let email = postData['email'];
             if (!email) {
                 return h.response('No data received in the body of this request').code(400);
             }
@@ -32,7 +34,7 @@ const init = async () => {
             }
 
             const headers = {
-                'Authorization': 'apikey ' + API_KEY,
+                'Authorization': 'apikey ' + process.env.MAILCHIMP_API_KEY,
                 'Content-Type': 'application/json'
             };
 
@@ -52,6 +54,7 @@ const init = async () => {
                 });
 
                 return h.response('Created').code(201);
+
             } catch (e) {
 
                 const { res, payload } = await Wreck.get(`${API_URL}/lists/${LIST_ID}/members/`, {
@@ -64,9 +67,8 @@ const init = async () => {
                     return h.response('Duplicate email').code(409);
                 }
 
-                console.error(e);
+                return h.response('Error in request').code(400);
             }
-
 
         }
     });
@@ -76,7 +78,6 @@ const init = async () => {
 };
 
 process.on('unhandledRejection', (err) => {
-
     console.log(err);
     process.exit(1);
 });
