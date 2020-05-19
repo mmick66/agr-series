@@ -30,7 +30,7 @@
   });
 
   // Collapse Navbar
-  var navbarCollapse = function() {
+  let navbarCollapse = function() {
     if ($("#mainNav").offset().top > 100) {
       $("#mainNav").addClass("navbar-scrolled");
     } else {
@@ -53,4 +53,16 @@
     fixedContentPos: false
   });
 
-})(jQuery); // End of use strict
+  // Form submit
+  $('#sendEmailForm').on('submit', function(event) {
+
+    event.preventDefault();
+
+    let button = $('#submitEmail');
+
+    button.html('<span class="spinner-border" role="status" aria-hidden="true"></span>');
+    button.attr('disabled', true);
+
+  });
+
+  })(jQuery); // End of use strict
