@@ -7,7 +7,7 @@ const Hapi = require('@hapi/hapi');
 const Wreck = require('@hapi/wreck');
 const Validator = require("email-validator");
 
-const init = async () => {
+const init = async (apiKey) => {
 
     const server = Hapi.server({
         port: 3000,
@@ -34,7 +34,7 @@ const init = async () => {
             }
 
             const headers = {
-                'Authorization': 'apikey ' + process.env.MAILCHIMP_API_KEY,
+                'Authorization': 'apikey ' + apiKey,
                 'Content-Type': 'application/json'
             };
 
@@ -81,5 +81,12 @@ process.on('unhandledRejection', (err) => {
     console.log(err);
     process.exit(1);
 });
+
+const apiKey = process.env.MAILCHIMP_API_KEY;
+
+if (!apiKey) {
+    console.log('No API Key for the Mailchimp API has been set. Read README.md for more');
+    process.exit(1);
+}
 
 init().then();
