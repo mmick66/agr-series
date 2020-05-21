@@ -20,6 +20,7 @@ const init = async (apiKey) => {
         handler: async (request, h) => {
 
             let postData = request.payload;
+
             if (!postData) {
                 return h.response('No data received in the body of this request').code(400);
             }
@@ -73,6 +74,16 @@ const init = async (apiKey) => {
         }
     });
 
+    await server.register({
+        plugin: require('hapi-cors'),
+        options: {
+            origins: [
+                'http://localhost:63342',
+                'http://agr-series.com:80'
+            ]
+        }
+    });
+
     await server.start();
     console.log('Server running on %s', server.info.uri);
 };
@@ -89,4 +100,4 @@ if (!apiKey) {
     process.exit(1);
 }
 
-init().then();
+init(apiKey).then();
