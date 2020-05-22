@@ -58,14 +58,31 @@
 
     event.preventDefault();
     let button = $('#submitEmail');
+    const originalHTML = button.html();
     button.html('<span class="spinner-border" role="status" aria-hidden="true"></span>');
     button.attr('disabled', true);
 
-    const emailValue = $('#emailInput').val();
-    $.post( 'http://localhost:3000/email', { email: emailValue }, function(data, status) {
-      console.log('Here!!!!');
-      console.log(status);
-    });
+    const emailInput = $('#emailInput');
+
+    const emailValue = emailInput.val();
+
+    $.post( 'http://localhost:3000/email', { email: emailValue })
+        .done(function(data){
+
+          console.log('Registered');
+        })
+        .fail(function(xhr, status, error) {
+          switch (xhr.status) {
+            case 409:
+              console.log('Existing');
+            default:
+              console.error('Call failed')
+          }
+        })
+        .always(function () {
+          button.html(originalHTML);
+          button.attr('disabled', false);
+        });
 
   });
 
