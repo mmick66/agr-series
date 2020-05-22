@@ -53,6 +53,25 @@
     fixedContentPos: false
   });
 
+  const saveFileLocally = (data) => {
+
+    const tname = 'a';
+    const qname = 'href';
+    const value = 'data:text/plain;charset=utf-8,' + encodeURIComponent(data);
+
+    const element = document.createElement(tname);
+    element.setAttribute(qname, value);
+
+    element.setAttribute('download', 'sample.pdf');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  };
+
   // Form submit
   $('#sendEmailForm').on('submit', function(event) {
 
@@ -68,16 +87,11 @@
 
     $.post( 'http://localhost:3000/email', { email: emailValue })
         .done(function(data){
-
-          console.log('Registered');
+          console.log('POST: Done');
+          saveFileLocally(data);
         })
         .fail(function(xhr, status, error) {
-          switch (xhr.status) {
-            case 409:
-              console.log('Existing');
-            default:
-              console.error('Call failed')
-          }
+          console.error('POST: Error');
         })
         .always(function () {
           button.html(originalHTML);

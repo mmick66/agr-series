@@ -1,4 +1,7 @@
 const Validator = require("email-validator");
+const Wreck = require('@hapi/wreck');
+
+const PDF_FILE_NAME = './static/sample.pdf';
 
 module.exports = (apiURL, apiKey, listID) => { // Factory method
 
@@ -41,7 +44,7 @@ module.exports = (apiURL, apiKey, listID) => { // Factory method
                 headers: headers
             });
 
-            return h.response('Created').code(201);
+            return h.file(PDF_FILE_NAME);
 
         } catch (e) {
 
@@ -51,11 +54,8 @@ module.exports = (apiURL, apiKey, listID) => { // Factory method
 
             const listObject = JSON.parse(payload);
             const filtered = listObject.members.filter( (element) => element.email_address === email);
-            if (filtered.length > 0) {
-                return h.response('Duplicate email').code(409);
-            }
+            return filtered.length > 0 ? h.file(PDF_FILE_NAME) : h.response('Error in request').code(400);
 
-            return h.response('Error in request').code(400);
         }
 
     };

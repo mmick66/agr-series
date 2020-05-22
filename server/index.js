@@ -3,11 +3,7 @@
 const API_URL = 'https://us18.api.mailchimp.com/3.0';
 const LIST_ID = 'dee953cf76';
 
-const Path = require('path');
-
 const Hapi = require('@hapi/hapi');
-const Wreck = require('@hapi/wreck');
-
 
 const init = async (API_KEY) => {
 
