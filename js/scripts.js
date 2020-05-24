@@ -1,5 +1,6 @@
+"use strict"; // Start of use strict
+
 (function($) {
-  "use strict"; // Start of use strict
 
   // Smooth scrolling using jQuery easing
   $('a.js-scroll-trigger[href*="#"]:not([href="#"])').click(function() {
@@ -53,53 +54,63 @@
     fixedContentPos: false
   });
 
-  const saveFileLocally = (data) => {
+})(jQuery); // End of use strict
 
+
+
+/* === Submit Form === */
+
+(function($) {
+
+  const saveFileLocally = (data) => {
     const tname = 'a';
     const qname = 'href';
     const value = 'data:text/plain;charset=utf-8,' + encodeURIComponent(data);
-
     const element = document.createElement(tname);
     element.setAttribute(qname, value);
-
     element.setAttribute('download', 'sample.pdf');
-
     element.style.display = 'none';
     document.body.appendChild(element);
-
     element.click();
-
     document.body.removeChild(element);
+  };
+
+  const showLoader = (button) => {
+    const originalHTML = button.html();
+    button.html('<span class="spinner-border" role="status" aria-hidden="true"></span>');
+    button.attr('disabled', true);
+    return originalHTML;
+  };
+
+  const hideLoader = (button, html) => {
+    button.html(html);
+    button.attr('disabled', false);
   };
 
   // Form submit
   $('#sendEmailForm').on('submit', function(event) {
 
     event.preventDefault();
+
     let button = $('#submitEmail');
-    const originalHTML = button.html();
-    button.html('<span class="spinner-border" role="status" aria-hidden="true"></span>');
-    button.attr('disabled', true);
 
-    const emailInput = $('#emailInput');
+    const originalHTML = showLoader(button);
 
-    const emailValue = emailInput.val();
+    const emailValue = $('#emailInput').val();
 
     $.post( 'http://localhost:3000/email', { email: emailValue })
-        .done(function(data){
-          console.log('POST: Done');
+        .done(function(data) {
           saveFileLocally(data);
         })
         .fail(function(xhr, status, error) {
           console.error('POST: Error');
         })
         .always(function () {
-          button.html(originalHTML);
-          button.attr('disabled', false);
+          hideLoader(button, originalHTML);
+          $('#emailInput').val('');
         });
 
   });
-
 
 
 })(jQuery); // End of use strict
