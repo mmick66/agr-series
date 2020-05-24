@@ -5,12 +5,25 @@ const LIST_ID = 'dee953cf76';
 
 const Hapi = require('@hapi/hapi');
 
-const init = async (API_KEY) => {
+const redis = require("redis");
+const promisify = require("util").promisify;
+
+const start = async (API_KEY) => {
+
 
     const server = Hapi.server({
         port: 3000,
         host: 'localhost'
     });
+
+    const redisClient = redis.createClient({
+            host: process.env.REDIS_HOST || '127.0.0.1',
+            port: process.env.REDIS_PORT || 6379,
+        }
+    );
+
+    redisClient.getAsync = promisify(redisClient.get).bind(redisClient);
+    redisClient.setAsync = promisify(redisClient.set).bind(redisClient);
 
     server.route({
         method: 'POST',
@@ -32,7 +45,14 @@ const init = async (API_KEY) => {
         plugin: require('@hapi/inert')
     });
 
+    redisClient.on('error', function (err) {
+        console.error('Redis error.', err);
+    });
+
+    server.app.redis = redisClient;
+
     await server.start();
+
     console.log('Server running on %s', server.info.uri);
 };
 
@@ -48,4 +68,4 @@ if (!API_KEY) {
     process.exit(1);
 }
 
-init(API_KEY).then();
+start(API_KEY).then();

@@ -3,9 +3,13 @@ const Wreck = require('@hapi/wreck');
 
 const PDF_FILE_NAME = './static/sample.pdf';
 
+
 module.exports = (apiURL, apiKey, listID) => { // Factory method
 
+
     return  async (request, h) => {
+
+        let cache = request.server.app.redis;
 
         let postData = request.payload;
 
@@ -44,17 +48,37 @@ module.exports = (apiURL, apiKey, listID) => { // Factory method
                 headers: headers
             });
 
+            await cache.setAsync(email, true);
+
             return h.file(PDF_FILE_NAME);
 
         } catch (e) {
 
+            /* -- Fast path -- */
+            const emailCached = await cache.getAsync(email);
+            if (emailCached) {
+                return h.file(PDF_FILE_NAME);
+            }
+
+            /* -- Slow path -- */
             const { res, payload } = await Wreck.get(membersURL, {
-                headers: headers
+                headers: headers,
+                json: true
             });
 
-            const listObject = JSON.parse(payload);
-            const filtered = listObject.members.filter( (element) => element.email_address === email);
-            return filtered.length > 0 ? h.file(PDF_FILE_NAME) : h.response('Error in request').code(400);
+            for (const m of payload.members) {
+                const memberEmail = m.email_address;
+                if (memberEmail === email) {
+                    await cache.setAsync(memberEmail, true);
+                    return h.file(PDF_FILE_NAME);
+                }
+            }
+
+            if (found) {
+                return h.file(PDF_FILE_NAME);
+            }
+
+            return h.response('Error in request').code(400);
 
         }
 
