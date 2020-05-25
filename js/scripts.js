@@ -92,6 +92,10 @@
 
     event.preventDefault();
 
+
+
+    return;
+
     let button = $('#submitEmail');
 
     const originalHTML = showLoader(button);
@@ -101,15 +105,16 @@
     $.post( 'http://localhost:3000/email', { email: emailValue })
         .done(function(data) {
           saveFileLocally(data);
+          // $('#sendEmailForm').html('<h3>Thank you!</h3>');
         })
         .fail(function(xhr, status, error) {
           console.error('POST: Error');
+          $('#errorModal').modal();
         })
         .always(function () {
           hideLoader(button, originalHTML);
           $('#emailInput').val('');
         });
-
   });
 
 
