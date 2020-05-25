@@ -8,6 +8,7 @@ const Hapi = require('@hapi/hapi');
 const redis = require("redis");
 const promisify = require("util").promisify;
 
+
 const start = async (API_KEY) => {
 
 
@@ -21,6 +22,8 @@ const start = async (API_KEY) => {
             port: process.env.REDIS_PORT || 6379,
         }
     );
+
+
 
     redisClient.getAsync = promisify(redisClient.get).bind(redisClient);
     redisClient.setAsync = promisify(redisClient.set).bind(redisClient);
