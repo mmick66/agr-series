@@ -2,6 +2,8 @@ const sgMail = require('@sendgrid/mail');
 
 class SendgridConnector {
 
+    FROM = 'hello@agr-series.com';
+
     constructor(apiKey) {
         sgMail.setApiKey(apiKey);
     }
@@ -10,7 +12,7 @@ class SendgridConnector {
 
         const msg = {
             to: email,
-            from: 'hello@agr-series.com',
+            from: this.FROM,
             subject: 'Thank you for downloading',
             text: 'We will keep you up to date',
             html: '<strong>and easy to do anywhere, even with Node.js</strong>',
