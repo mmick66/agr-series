@@ -9,7 +9,7 @@ const redis = require("redis");
 const promisify = require("util").promisify;
 
 
-const start = async (API_KEY) => {
+const start = async (MAILCHIMP_API_KEY) => {
 
 
     const server = Hapi.server({
@@ -23,15 +23,13 @@ const start = async (API_KEY) => {
         }
     );
 
-
-
     redisClient.getAsync = promisify(redisClient.get).bind(redisClient);
     redisClient.setAsync = promisify(redisClient.set).bind(redisClient);
 
     server.route({
         method: 'POST',
         path: '/email',
-        handler: require('./handlers/email.handler')(API_URL, API_KEY, LIST_ID)
+        handler: require('./handlers/email.handler')(API_URL, MAILCHIMP_API_KEY, LIST_ID)
     });
 
     await server.register({
@@ -64,11 +62,13 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
 });
 
-const API_KEY = process.env.MAILCHIMP_API_KEY;
+const MAILCHIMP_API_KEY = process.env.MAILCHIMP_API_KEY;
 
-if (!API_KEY) {
+// const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+
+if (!MAILCHIMP_API_KEY) {
     console.log('No API Key for the Mailchimp API has been set. Read README.md for more');
     process.exit(1);
 }
 
-start(API_KEY).then();
+start(MAILCHIMP_API_KEY).then();

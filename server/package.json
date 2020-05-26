@@ -13,9 +13,9 @@
     "@hapi/hapi": "^19.1.1",
     "@hapi/inert": "^6.0.1",
     "@hapi/wreck": "^17.0.0",
+    "@sendgrid/mail": "^7.1.1",
     "email-validator": "^2.0.4",
     "hapi-cors": "^1.0.3",
-    "nodemailer": "^6.4.6",
     "redis": "^3.0.2"
   }
 }
