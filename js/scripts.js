@@ -92,10 +92,6 @@
 
     event.preventDefault();
 
-
-
-    return;
-
     let button = $('#submitEmail');
 
     const originalHTML = showLoader(button);
